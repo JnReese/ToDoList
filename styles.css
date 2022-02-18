@@ -1,0 +1,58 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css";
+
+.column {
+  margin-top: 2em;
+}
+
+body {
+  min-height: 100%;
+  background-color: aquamarine;
+  height: 100vh;
+  width: 100vw;
+}
+.title {
+  display: flex;
+  justify-content: center;
+  padding-right: 1em;
+}
+span {
+  margin-right: 10px;
+}
+p:empty:not(:focus)::before {
+  content: attr(data-placeholder);
+}
+::placeholder {
+  color: silver;
+  font-style: italic;
+  font-size: 15px;
+  opacity: 1;
+}
+.markedAsComplete {
+  visibility: hidden;
+  margin-top: 5px;
+}
+
+.unchecked {
+  font-style: normal;
+  position: absolute;
+}
+.unchecked:hover {
+  cursor: pointer;
+}
+#defaultTask {
+  margin-bottom: 0px;
+  display: none;
+}
+#removeButton:hover {
+  cursor: pointer;
+}
+#removeButton {
+  border: 1px 0px 1px 1px solid black;
+}
+#removeAllItems {
+  cursor: pointer;
+}
+
+#footer {
+  margin-top: 1em;
+}
