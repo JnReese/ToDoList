@@ -6,12 +6,49 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To Do List</title>
-    <script src="app.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/401863d6c1.js" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
-    <h1>Juice man</h1>
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter title">
+            <span>ToDo List</span>
+            <i class="fa-solid fa-folder-open"></i>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="card">
+                <header class="card-header">
+                    <input class="card-header-title" placeholder="What else needs to be done?" id="userInput">
+                    </input>
+                    <button class="card-header-icon" aria-label="more options" id="plusIcon">
+                        <span class="icon">
+                            <i class="fa-solid fa-plus"></i>
+                        </span>
+                    </button>
+                </header>
+                <div class="card-content"">
+                    <div class=" content createTask" id="defaultTask">
+                    <label class="checkbox">
+                        <input type="checkbox" class="actualCheckbox" id="dontDelete">
+                    </label>
+                    <span id="defaultTaskText"></span>
+                    <button class="delete is-small"></button>
+                </div>
+                <div id="tasks-container">
+
+                </div>
+                <footer class="card-footer" id="footer">
+                    <p class="card-footer-item" id="countOfItems">Item count:</p>
+                    <button class="card-footer-item" id="removeButton">Remove</button>
+                    <button class="card-footer-item" id="removeAllItems">Remove All</p>
+                </footer>
+            </div>
+        </div>
+        <script src="app.js"></script>
 </body>
 
 </html>
