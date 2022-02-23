@@ -1,103 +1,115 @@
-var httpRequest = new XMLHttpRequest();
-httpRequest.onload = function () {
-  if (httpRequest.readyState === XMLHttpRequest.DONE) {
-    if (httpRequest.status === 200) {
-      var response = JSON.parse(httpRequest.responseText);
-      if (response.tasks) {
-        // clone the default task and change it's properties to each of these tasks
-        response.tasks.forEach((task) => {
-          addNewItem(task.content);
-        });
+document.addEventListener("DOMContentLoaded", function () {
+  const createNewTaskPUT = async (inputValue) => {
+    const response = await fetch(
+      "https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=288",
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          task: {
+            content: inputValue,
+          },
+        }),
       }
-    } else {
-      httpRequest.statusText;
+    );
+    return response.json();
+  };
+  const recieveTaskFromServer = async () => {
+    const response = await fetch(
+      "https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=288",
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    );
+    return response.json();
+  };
+  const checkboxMarkState = async (id, action) => {
+    const response = await fetch(
+      `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}/${action}?api_key=288`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PUT",
+      }
+    );
+    return response.json();
+  };
+  const deleteTaskRequest = async (id) => {
+    const response = await fetch(
+      `https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}?api_key=288`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+      }
+    );
+    return response.json();
+  };
+
+  document.querySelector("#new-task-button").addEventListener("click", () => {
+    const inputValue = document.querySelector("#new-task-input").value;
+    if (inputValue) {
+      createNewTaskPUT(inputValue).then((res) => createTaskElement(res.task));
     }
-  }
-};
-httpRequest.onerror = function () {
-  httpRequest.statusText;
-};
-httpRequest.open(
-  "GET",
-  "https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=1",
-  true
-);
-httpRequest.send();
-let userInput = document.getElementById("userInput");
-let createTask = document.getElementsByClassName("createTask");
-let plusButton = document.getElementById("plusIcon");
-let checkbox = document.getElementsByClassName("actualCheckbox");
-let removeButton = document.getElementById("removeButton");
-let removeAllButton = document.getElementById("removeAllItems");
-let itemsCount = document.getElementById("countOfItems");
-let defaultTask = document.getElementById("defaultTask");
-let taskContainer = document.getElementById("tasks-container");
-let numberOfItems = 0;
-newItemCounter = 0;
-let newTask = "";
-userInput.addEventListener("keyup", (event) => {
-  userInputTask = event.target.value;
-  newTask = userInputTask;
-});
-plusButton.addEventListener("click", (event) => {
-  plusButtonClicked = event.target;
-  if (userInput.value == "") {
-    alert("add task");
-  }
-  if (userInput.value !== "") {
-    addNewItem();
-    numberOfItems += 1;
-    updateItemCount();
-  }
-});
-removeButton.addEventListener("click", function () {
-  removeSelectedItems();
-  updateItemCount();
-});
-removeAllButton.addEventListener("click", function () {
-  removeAll();
-  countOfItems.innerHTML = "item count:" + " " + 0;
-  numberOfItems = 0;
-});
-document.querySelectorAll(".delete").forEach((item) => {
-  item;
-  item.addEventListener("click", function (event) {
-    event.target;
   });
-});
-function addNewItem(content) {
-  let newItem = defaultTask.cloneNode(true);
-  newItem.classList.add("tasks");
-  newItem.style.margin = "0px 0px 0px 0px";
-  newItem.id = "item" + newItemCounter;
-  newItemCounter += 1;
-  newItem.innerHTML += content || newTask;
-  newItem.querySelector(".delete").addEventListener("click", function (event) {
-    newItem.remove();
-    updateItemCount();
-  });
-  taskContainer.append(newItem);
-  let resetInput = document.getElementById("userInput").innerHTML;
-  resetInput = "";
-  updateItemCount();
-}
-function updateItemCount() {
-  for (i = 0; i < checkbox.length; i++) {
-    numberOfElements = checkbox.length;
-    countOfItems.innerHTML = "item count:" + " " + (numberOfElements - 1);
-  }
-}
-updateItemCount();
-function checkIfCircleIsClickedAgain() {
-  for (i = 0; i < checkedCircle.length; i++) {
-    let buttonsClicked = checkedCircle[i];
-    buttonsClicked.addEventListener("click", function (event) {
-      event.target.style.visibility = "hidden";
-      event.target.previousSibling.previousSibling.style.display = "flex";
+
+  //effects the DOM
+
+  const createTaskElement = (task) => {
+    var template = document.querySelector("#task-template");
+    var taskTemplateClone = template.content.cloneNode(true);
+
+    taskTemplateClone.querySelector(".taskContent").innerHTML = task.content;
+    taskTemplateClone.querySelector(".task").setAttribute("data-id", task.id);
+
+    taskTemplateClone
+      .querySelector(".checkbox")
+      .addEventListener("change", handleCheckboxChange);
+
+    taskTemplateClone
+      .querySelector(".removeTask")
+      .addEventListener("click", deleteTask);
+
+    if (task.completed) {
+      taskTemplateClone.querySelector(".checkbox").checked = true;
+    }
+
+    document.querySelector("#taskContainer").append(taskTemplateClone);
+  };
+
+  //
+
+  const deleteTask = (e) => {
+    const taskId = e.target.parentElement.getAttribute("data-id");
+    deleteTaskRequest(taskId).then((res) => {
+      if (res.success) e.target.parentElement.remove();
     });
-  }
-}
-function removeAll() {
-  const taskContainer = document.getElementById("tasks-container");
-  taskContainer.innerHTML = "";
-}
+  };
+
+  //
+
+  const handleCheckboxChange = (e) => {
+    const taskId = e.target.parentElement.getAttribute("data-id");
+    if (e.target.checked) {
+      checkboxMarkState(taskId, "mark_complete");
+    } else {
+      checkboxMarkState(taskId, "mark_active");
+    }
+  };
+
+  // retrieving all tasks from server
+  recieveTaskFromServer().then((res) => {
+    if (res.tasks) {
+      res.tasks.forEach((task) => {
+        createTaskElement(task);
+      });
+    }
+  });
+});
